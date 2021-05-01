@@ -10,15 +10,22 @@ If there is not point around a agent, it stop moving.
 Around means that left and right, top and bottom in a list ,so a agent can view there.
 This study purpose is how a agent decrease the remaining point in the giving graph.  
 """
+import copy
+import matplotlib.pyplot as plt
+import numpy as np
 
-N = 10
+N = 5
 
-graph = [[0,1,0,0,1],
+"""
+base_graph = [[0,1,0,0,1],
          [0,0,1,0,0],
          [1,0,0,0,1],
          [0,0,1,0,0],
          [1,1,0,1,0]]
-    
+"""
+def make_graph(num):
+    return np.random.randint(2, size=(num, num))
+ 
 def line():
     print("------------\n")
 
@@ -128,28 +135,45 @@ class mas_test:
             self.x = 0
         else:
             self.x += 1
-    
-#(state, next_state, t, s):  
-agent1 = mas_test(0,0,0,0)
 
-#agent2 = mas_test(1,0,0,0)
+base_graph = copy.deepcopy(make_graph(N))
+data_step = []
+data_state = []
+for y in range(len(base_graph)):
+    for x in range(len(base_graph[0])):
+        #init_paramater 
+        step = 0
+        graph = copy.deepcopy(base_graph)
+        #--------------
+        agent1 = mas_test(0,0,0,0)
+        agent1.pr()
+        agent1.here(x,y)
+        while(True):
+            line()
+            yoko = agent1.action_yoko(graph)
+            tate = agent1.action_tate(graph)
+            line()
+            agent1.gr_pr(graph)
+            step += 1
+            if(agent1.count(graph) == 0):
+                break
+            if(yoko == 0 and tate == 0):
+                agent1.next_x(graph)
+            line()
+        data_step += [step]
+        data_state += [agent1.state]
 
-#deback
-agent1.pr()
-agent1.here(0,3)
-
-while(True):
-    line()
-    yoko = agent1.action_yoko(graph)
-    tate = agent1.action_tate(graph)
-    line()
-    agent1.gr_pr(graph)
-    if(agent1.count(graph) == 0):
-        break
-    if(yoko == 0 and tate == 0):
-        agent1.next_x(graph)
-    line()
-    
-agent1.pr()
+#x = range(len(base_graph)*len(base_graph[0]))
+location = []
+for y in range(len(base_graph)):
+    for x in range(len(base_graph[0])):
+        title = '({},{})'.format(x, y) 
+        location += [title]
         
+
+plt.xticks(rotation=90)
+plt.plot(location, data_step, color = "green", linestyle = "--", label="step")
+plt.plot(location, data_state, color = "blue", linestyle = ":", label="state")
+plt.legend(bbox_to_anchor=(1, 1), loc='lower right', borderaxespad=1)
+plt.show()
 
